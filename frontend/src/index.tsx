@@ -4,6 +4,11 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+import 'leaflet/dist/leaflet.css';
+import 'react-leaflet-fullscreen/styles.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
