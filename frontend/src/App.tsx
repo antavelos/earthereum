@@ -7,7 +7,7 @@ import { FeatureCollection } from "geojson";
 const countriesPath = require("./countries.geojson");
 
 function App() {
-  const [ countriesGeoJson, setCountriesGeoJson ] = useState<FeatureCollection>()
+  const [ countriesGeoJson, setCountriesGeoJson ] = useState<FeatureCollection | undefined>({features: []})
 
   const loadGeoJsonData = () => {
     fetch(countriesPath)

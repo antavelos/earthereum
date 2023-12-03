@@ -19,5 +19,17 @@ code {
 }
 
 .leaflet-popup-content-wrapper {
-  border-radius: 5px! important;
+  border-radius: 0! important;
+}
+
+button, input, .input-group, .list-group-item {
+  border-radius: 0! important;
+}
+
+.card, .card-header {
+  border-radius: 0! important;
+}
+
+.sr-only {
+  display: none;
 }

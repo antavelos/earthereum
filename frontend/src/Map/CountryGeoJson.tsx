@@ -2,8 +2,11 @@ import { Feature } from 'geojson';
 import { Button, Card } from 'react-bootstrap';
 import { GeoJSON, Popup } from 'react-leaflet';
 import {v4 as uuid4} from 'uuid';
+import BigNumber from "bignumber.js";
 
-const Country: React.FunctionComponent<{ data: Feature }> = ({ data }) => {
+const formatBigNumber = (num: number): string => (new BigNumber(num)).toFormat();
+
+const CountryGeoJson: React.FunctionComponent<{ data: Feature }> = ({ data }) => {
   return (
     <GeoJSON
       key={uuid4()}
@@ -25,7 +28,7 @@ const Country: React.FunctionComponent<{ data: Feature }> = ({ data }) => {
           <Card.Body>
             {/* <Card.Title>{data.properties!.name}</Card.Title> */}
             <Card.Text>
-
+            Total area: {formatBigNumber(data.properties!.areaInKm2)} km<sup>2</sup>
             </Card.Text>
             <Button variant="outline-success" size='sm'>Claim</Button>{' '}
             <Button variant="outline-success" size='sm'>Sell</Button>{' '}
@@ -37,4 +40,4 @@ const Country: React.FunctionComponent<{ data: Feature }> = ({ data }) => {
   )
 }
 
-export default Country;
+export default CountryGeoJson;

@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 import 'leaflet/dist/leaflet.css';
+import 'leaflet-draw/dist/leaflet.draw.css';
 import 'react-leaflet-fullscreen/styles.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
