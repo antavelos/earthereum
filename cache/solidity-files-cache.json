@@ -38,8 +38,8 @@
       ]
     },
     "/home/alex/dev/React/erthereum/contracts/Earthereum.sol": {
-      "lastModificationDate": 1701377227374,
-      "contentHash": "70ce4fc4c4b82ea8c11b846bb3cb0fc6",
+      "lastModificationDate": 1701406830554,
+      "contentHash": "b8a0d7b06861bb08b9840a3369178d5f",
       "sourceName": "contracts/Earthereum.sol",
       "solcConfig": {
         "version": "0.8.20",

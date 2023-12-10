@@ -1,19 +1,63 @@
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync } from "fs";
 import { FeatureCollection, Feature } from 'geojson'
 import geoJsonArea from '@mapbox/geojson-area';
+import { sha256 } from "ethers";
 
-const path = '../../frontend/src/countries.geojson';
 
-const data = readFileSync(path);
-
-let geoJSON: FeatureCollection = JSON.parse(data.toString());
-
-geoJSON.features = geoJSON.features.map((feature: Feature) => {
+const updateArea = (feature: Feature) => {
   const [area] = (geoJsonArea.geometry(feature.geometry) / 1000000).toString().split('.')
 
   feature.properties!.areaInKm2 = Number(area);
 
   return {...feature};
-});
+}
 
-writeFileSync(path, JSON.stringify(geoJSON));
+const hashCoordinates = (feature: Feature) => {
+  const coordStr = JSON.stringify(feature.geometry.coordinates);
+  feature.properties!.coordinatesHash = sha256(Buffer.from(coordStr));
+
+  return {...feature}
+}
+
+const fileUpdate = () => {
+
+  const inputFile = process.argv[2]
+
+  if (inputFile === undefined) {
+    throw Error("input file is required");
+  }
+
+  const data = readFileSync(inputFile);
+
+  let geoJSON: FeatureCollection = JSON.parse(data.toString());
+
+  geoJSON.features = geoJSON.features.map(updateArea);
+  geoJSON.features = geoJSON.features.map(hashCoordinates);
+
+  console.log(JSON.stringify(geoJSON));
+};
+
+const merger = () => {
+const certFile = process.argv[2];
+const geoJsonFile = process.argv[3];
+
+  if (certFile === undefined || geoJsonFile === undefined) {
+    throw Error("input files are required");
+  }
+
+  const certsData = readFileSync(certFile);
+  const geoJsonData = readFileSync(geoJsonFile);
+
+  let certs = JSON.parse(certsData.toString());
+  let geoJSON: FeatureCollection = JSON.parse(geoJsonData.toString());
+
+  geoJSON.features.map((feature, i) => {
+    certs[i].coordinatesHash = feature.properties!.coordinatesHash;
+    return {...feature};
+  });
+
+  console.log(JSON.stringify(certs));
+}
+
+// fileUpdate();
+merger();

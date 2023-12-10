@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,7 +12,12 @@
   "dependencies": {
     "@mapbox/geojson-area": "^0.2.2",
     "@mapbox/geojson-types": "^1.0.2",
-    "@types/mapbox__geojson-area": "^0.2.6"
+    "@types/mapbox__geojson-area": "^0.2.6",
+    "ethereumjs-util": "^7.1.5",
+    "ethereumjs-wallet": "^1.0.2",
+    "ethers": "^6.9.0",
+    "ethers-typescript-typings": "^0.0.4",
+    "zokrates-js": "^1.1.9"
   },
   "devDependencies": {
     "@types/node": "^20.10.1",
