@@ -1,71 +1,80 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
+import "./Verifier.sol";
+import "./Land.sol";
 
-contract Earthereum is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Pausable, Ownable, ERC721Burnable {
-    uint256 private _nextTokenId;
+library Types {
+    using Pairing for *;
 
-    constructor(address initialOwner)
-        ERC721("Earthereum", "EARTH")
-        Ownable(initialOwner)
-    {}
+    struct Proof {
+        Pairing.G1Point a;
+        Pairing.G2Point b;
+        Pairing.G1Point c;
+    }
+}
 
-    // function _baseURI() internal pure override returns (string memory) {
-    //     return "http://localhost:5000";
-    // }
+contract IVerifier {
+    function verifyTx(
+        Types.Proof memory,
+        uint[4] memory
+    ) public view returns (bool) {}
+}
 
-    function pause() public onlyOwner {
-        _pause();
+contract IEarth {
+    function totalSupply() public view virtual returns (uint256) {}
+
+    function balanceOf(address) public view virtual returns (uint256) {}
+
+    function transfer(address, uint256) public virtual returns (bool) {}
+}
+
+contract Earthereum is Land {
+    using Math for int64;
+
+    IVerifier private verifier;
+    IEarth private earth;
+    bool private initialized;
+
+    modifier isInitialized() {
+        require(initialized, "not initialized");
+        _;
     }
 
-    function unpause() public onlyOwner {
-        _unpause();
+    constructor() Land(msg.sender) {}
+
+    function initialize(
+        address _verifier,
+        address _earthToken
+    ) external onlyOwner {
+        require(!initialized, "already initialized");
+
+        verifier = IVerifier(_verifier);
+        earth = IEarth(_earthToken);
+
+        initialized = true;
     }
 
-    function safeMint(address to, string memory uri) public onlyOwner {
-        uint256 tokenId = _nextTokenId++;
-        _safeMint(to, tokenId);
-        _setTokenURI(tokenId, uri);
+    function claim(
+        uint256 area,
+        uint[4] calldata zkInput,
+        Types.Proof calldata zkProof,
+        string calldata uri
+    ) external isInitialized {
+        require(verifier.verifyTx(zkProof, zkInput), "verification failed");
+
+        uint256 tokens = area;
+
+        earth.transfer(msg.sender, tokens);
+        safeMint(msg.sender, uri);
     }
 
-    // The following functions are overrides required by Solidity.
+    function putForSale(uint256 tokenId) external {}
 
-    function _update(address to, uint256 tokenId, address auth)
-        internal
-        override(ERC721, ERC721Enumerable, ERC721Pausable)
-        returns (address)
-    {
-        return super._update(to, tokenId, auth);
-    }
+    function putForRent(uint256 tokenId) external {}
 
-    function _increaseBalance(address account, uint128 value)
-        internal
-        override(ERC721, ERC721Enumerable)
-    {
-        super._increaseBalance(account, value);
-    }
+    function buy(uint256 tokenId) external {}
 
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        override(ERC721, ERC721URIStorage)
-        returns (string memory)
-    {
-        return super.tokenURI(tokenId);
-    }
-
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC721, ERC721Enumerable, ERC721URIStorage)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
-    }
+    function rent(uint256 tokenId) external {}
 }
