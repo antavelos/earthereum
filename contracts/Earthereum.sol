@@ -5,6 +5,9 @@ import "@openzeppelin/contracts/utils/math/Math.sol";
 import "./Verifier.sol";
 import "./Land.sol";
 
+// TODO: remove it
+import "hardhat/console.sol";
+
 library Types {
     using Pairing for *;
 
@@ -27,18 +30,26 @@ contract IEarth {
 
     function balanceOf(address) public view virtual returns (uint256) {}
 
-    function transfer(address, uint256) public virtual returns (bool) {}
+    function mint(address, uint256) public {}
 }
 
 contract Earthereum is Land {
     using Math for int64;
 
+    error VerificationFailure(address account);
+    error NotInitialized();
+    error AlreadyInitialized();
+
     IVerifier private verifier;
     IEarth private earth;
     bool private initialized;
 
-    modifier isInitialized() {
-        require(initialized, "not initialized");
+    event LandClaimed(address);
+
+    modifier requireInitialized() {
+        if (!initialized) {
+            revert NotInitialized();
+        }
         _;
     }
 
@@ -48,7 +59,9 @@ contract Earthereum is Land {
         address _verifier,
         address _earthToken
     ) external onlyOwner {
-        require(!initialized, "already initialized");
+        if (initialized) {
+            revert AlreadyInitialized();
+        }
 
         verifier = IVerifier(_verifier);
         earth = IEarth(_earthToken);
@@ -57,17 +70,27 @@ contract Earthereum is Land {
     }
 
     function claim(
-        uint256 area,
+        uint256 areaInKm2,
         uint[4] calldata zkInput,
         Types.Proof calldata zkProof,
-        string calldata uri
-    ) external isInitialized {
-        require(verifier.verifyTx(zkProof, zkInput), "verification failed");
+        string calldata uri,
+        address claimer
+    )
+        external
+        onlyOwner
+        requireInitialized
+    {
+        if (!verifier.verifyTx(zkProof, zkInput)) {
+            revert VerificationFailure(msg.sender);
+        }
 
-        uint256 tokens = area;
+        uint256 tokens = areaInKm2;
 
-        earth.transfer(msg.sender, tokens);
-        safeMint(msg.sender, uri);
+        earth.mint(claimer, tokens);
+
+        safeMint(claimer, uri);
+
+        emit LandClaimed(claimer);
     }
 
     function putForSale(uint256 tokenId) external {}

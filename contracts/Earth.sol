@@ -6,13 +6,18 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 
+// TODO: remove
+import "hardhat/console.sol";
+
 contract Earth is ERC20, ERC20Pausable, Ownable, ERC20Permit {
+    uint256 public constant MAX_TOKENS = 10000000000000;
+
     constructor(address initialOwner)
         ERC20("Earth", "EARTH")
         Ownable(initialOwner)
         ERC20Permit("Earth")
     {
-        _mint(msg.sender, 10000000000000 * 10 ** decimals());
+        _mint(msg.sender, MAX_TOKENS * 10 ** decimals());
     }
 
     function pause() public onlyOwner {
