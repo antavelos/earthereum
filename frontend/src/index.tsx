@@ -8,6 +8,7 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'react-leaflet-fullscreen/styles.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Web3ContextProvider from './context/Web3Context';
 
 
 const root = ReactDOM.createRoot(
@@ -15,7 +16,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <Web3ContextProvider>
+      <App />
+    </Web3ContextProvider>
   </React.StrictMode>
 );
 

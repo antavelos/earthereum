@@ -33,3 +33,7 @@ button, input, .input-group, .list-group-item {
 .sr-only {
   display: none;
 }
+
+.popover {
+  --bs-popover-max-width: 400px! important;
+}

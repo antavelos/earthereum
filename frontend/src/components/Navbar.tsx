@@ -1,19 +1,49 @@
-import { Container, Navbar as BNavbar } from 'react-bootstrap'
+import { MouseEventHandler } from 'react';
+import { Container, Navbar as BNavbar, Button, OverlayTrigger, Badge, Popover } from 'react-bootstrap'
 
-const Navbar: React.FunctionComponent<{ title: string, signedAddress: string }> = ({ title, signedAddress }) => {
-    return (
-      <BNavbar className="bg-body-tertiary" bg="dark" data-bs-theme="dark">
-        <Container>
-          <BNavbar.Brand href="#">{title}</BNavbar.Brand>
-          <BNavbar.Toggle />
-          <BNavbar.Collapse className="justify-content-end">
-            <BNavbar.Text>
-              Signed in as: <a href="">{signedAddress}</a>
-            </BNavbar.Text>
-          </BNavbar.Collapse>
-        </Container>
-      </BNavbar>
-    );
-  }
+type NavBarProps = {
+  title: string;
+  isAuthenticated: boolean;
+  currentAccount: string | null;
+  earthBalance: Number | null;
+  onClickConnect: MouseEventHandler<HTMLButtonElement>;
+  onClickDisConnect: MouseEventHandler<HTMLButtonElement>;
+}
 
-  export default Navbar;
+const Navbar: React.FunctionComponent<NavBarProps> = (props: NavBarProps) => {
+  return (
+    <BNavbar className="bg-body-tertiary" bg="dark" data-bs-theme="dark">
+      <Container>
+        <BNavbar.Brand href="#">{props.title}</BNavbar.Brand>
+        <BNavbar.Toggle />
+        <BNavbar.Collapse className="justify-content-end">
+          {props.isAuthenticated
+            ? <>
+                <OverlayTrigger
+                  trigger="click"
+                  placement="bottom"
+                  overlay={
+                    <Popover>
+                      <Popover.Body>
+                        {props.currentAccount}
+                      </Popover.Body>
+                    </Popover>
+                  }
+                >
+                  <BNavbar.Text>
+                    Connected as:
+                    <Badge bg="secondary">{props.currentAccount.slice(0, 8) + '...'}</Badge>
+                  </BNavbar.Text>
+                </OverlayTrigger> |
+                <BNavbar.Text>EARTH: {props.earthBalance?.toString()} </BNavbar.Text>
+                <Button size='sm' variant="primary" onClick={props.onClickDisConnect}>Disconnect</Button>
+              </>
+            : <Button size='sm' variant="primary" onClick={props.onClickConnect}>Connect</Button>
+          }
+        </BNavbar.Collapse>
+      </Container>
+    </BNavbar>
+  );
+}
+
+export default Navbar;
