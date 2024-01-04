@@ -5,7 +5,7 @@ import { IWeb3Context, useWeb3Context } from "../context/Web3Context";
 
 const useEarthBalance = () => {
   const contract = useEarthContract();
-  const [balance, setBalance] = useState<Number | null>(null);
+  const [balance, setBalance] = useState<Number | undefined>();
   const {
     state: { isAuthenticated, address },
   } = useWeb3Context() as IWeb3Context;

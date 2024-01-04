@@ -4,8 +4,8 @@ import { Container, Navbar as BNavbar, Button, OverlayTrigger, Badge, Popover } 
 type NavBarProps = {
   title: string;
   isAuthenticated: boolean;
-  currentAccount: string | null;
-  earthBalance: Number | null;
+  currentAccount?: string;
+  earthBalance?: Number;
   onClickConnect: MouseEventHandler<HTMLButtonElement>;
   onClickDisConnect: MouseEventHandler<HTMLButtonElement>;
 }
@@ -32,7 +32,7 @@ const Navbar: React.FunctionComponent<NavBarProps> = (props: NavBarProps) => {
                 >
                   <BNavbar.Text>
                     Connected as:
-                    <Badge bg="secondary">{props.currentAccount.slice(0, 8) + '...'}</Badge>
+                    <Badge bg="secondary">{props.currentAccount!.slice(0, 8) + '...'}</Badge>
                   </BNavbar.Text>
                 </OverlayTrigger> |
                 <BNavbar.Text>EARTH: {props.earthBalance?.toString()} </BNavbar.Text>

@@ -2,18 +2,22 @@ import { BrowserProvider, ethers, JsonRpcSigner } from "ethers";
 import { useToast } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 
+const OWNER_ADDRESS = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
+
 export interface IWeb3State {
-  address: string | null;
-  signer: JsonRpcSigner | null;
-  provider: BrowserProvider | null;
+  address?: string;
+  signer?: JsonRpcSigner;
+  owner?: JsonRpcSigner;
+  provider?: BrowserProvider;
   isAuthenticated: boolean;
 }
 
 const useWeb3Provider = () => {
   const initialWeb3State = {
-    address: null,
-    signer: null,
-    provider: null,
+    // address: null,
+    // signer: null,
+    // owner: null,
+    // provider: null,
     isAuthenticated: false,
   };
 
@@ -39,12 +43,15 @@ const useWeb3Provider = () => {
       const accounts: string[] = await provider.send("eth_requestAccounts", []);
 
       if (accounts.length > 0) {
+        const owner = new JsonRpcSigner(provider, OWNER_ADDRESS);
+
         const signer = await provider.getSigner();
 
         setState({
           ...state,
           address: accounts[0],
           signer,
+          owner,
           provider,
           isAuthenticated: true,
         });
