@@ -7,10 +7,16 @@ import { useEffect, useState } from 'react';
 import ClaimForm from './claimForm';
 import { Types } from '../../types/Earthereum';
 import useClaim, { ClaimProps } from '../../hooks/useClaim';
+import { BigNumberish } from 'ethers';
 
 const formatBigNumber = (num: number): string => (new BigNumber(num)).toFormat();
 
-const CountryGeoJson: React.FunctionComponent<{ data: Feature }> = ({ data }) => {
+type CountryProps = {
+  data: Feature;
+  onClaimClick: (name: string, area: BigNumberish) => void;
+}
+
+const CountryGeoJson: React.FunctionComponent<CountryProps> = ({ data, onClaimClick }) => {
   const [showClaimForm, setShowClaimForm] = useState(false);
   const {claim, loading} = useClaim();
 
@@ -53,23 +59,13 @@ const CountryGeoJson: React.FunctionComponent<{ data: Feature }> = ({ data }) =>
               <Card.Text>
               Total area: {formatBigNumber(data.properties!.areaInKm2)} km<sup>2</sup>
               </Card.Text>
-              <Button variant="outline-success" size='sm' onClick={() => setShowClaimForm(true)}>Claim</Button>{' '}
+              <Button variant="outline-success" size='sm' onClick={() => onClaimClick(data.properties!.name, data.properties!.areaInKm2)}>Claim</Button>{' '}
               <Button variant="outline-success" size='sm'>Sell</Button>{' '}
               <Button variant="outline-success" size='sm'>Buy</Button>
             </Card.Body>
           </Card>
         </Popup>
       </GeoJSON>
-
-      <ClaimForm
-        show={showClaimForm}
-        onClose={() => setShowClaimForm(false)}
-        onClaim={onSaveClaimForm}
-        countryName={data.properties!.name}
-        loading={loading}
-      >
-
-      </ClaimForm>
     </>
   )
 }
