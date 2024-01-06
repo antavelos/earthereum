@@ -1,12 +1,14 @@
 import { useState } from "react";
 import useEarthereumContract from "./useEarthereumContract";
 import { IWeb3Context, useWeb3Context } from "../context/Web3Context";
+import { BigNumberish } from "ethers";
+import { Types } from "../types/Earthereum";
 
-type ClaimProps = {
-  area: Number;
-  inputs: Object;
-  proof: Object;
-  uri: String;
+export type ClaimProps = {
+  area: BigNumberish;
+  zkInput: Types.ProofInput;
+  zkProof: Types.ProofStruct;
+  uri: string;
 };
 
 const useClaim = () => {
@@ -16,14 +18,13 @@ const useClaim = () => {
   } = useWeb3Context() as IWeb3Context;
   const contract = useEarthereumContract(owner);
 
-  const claim: (props: ClaimProps) => void = async ({area, inputs, proof, uri}) => {
-    if (!contract) {
+  const claim: (props: ClaimProps) => void = async ({area, zkInput, zkProof, uri}) => {
+    if (!contract || !signer) {
       return;
     }
 
     setLoading(true);
-
-    contract.claim(area, inputs, proof, uri, signer)
+    contract.claim(area, zkInput, zkProof, uri, signer)
     .then(() => {
       setLoading(false);
     })
@@ -33,7 +34,7 @@ const useClaim = () => {
     })
   };
 
-  return { claim, loading };
+  return { claim, loading, };
 };
 
 export default useClaim;

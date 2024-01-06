@@ -21,7 +21,7 @@ import type {
   TypedLogDescription,
   TypedListener,
   TypedContractMethod,
-} from "../../common";
+} from "./common";
 
 export declare namespace Pairing {
   export type G1PointStruct = { X: BigNumberish; Y: BigNumberish };
@@ -58,6 +58,8 @@ export declare namespace Types {
     b: Pairing.G2PointStructOutput;
     c: Pairing.G1PointStructOutput;
   };
+
+  export type ProofInput = [BigNumberish, BigNumberish, BigNumberish, BigNumberish];
 }
 
 export interface EarthereumInterface extends Interface {
@@ -122,7 +124,7 @@ export interface EarthereumInterface extends Interface {
     functionFragment: "claim",
     values: [
       BigNumberish,
-      [BigNumberish, BigNumberish, BigNumberish, BigNumberish],
+      Types.ProofInput,
       Types.ProofStruct,
       string,
       AddressLike
@@ -469,7 +471,7 @@ export interface Earthereum extends BaseContract {
   claim: TypedContractMethod<
     [
       areaInKm2: BigNumberish,
-      zkInput: [BigNumberish, BigNumberish, BigNumberish, BigNumberish],
+      zkInput: Types.ProofInput,
       zkProof: Types.ProofStruct,
       uri: string,
       claimer: AddressLike

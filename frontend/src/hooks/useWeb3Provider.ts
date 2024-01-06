@@ -1,23 +1,25 @@
-import { BrowserProvider, ethers, JsonRpcSigner } from "ethers";
+import { AddressLike, BrowserProvider, ethers, JsonRpcSigner } from "ethers";
 import { useToast } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
+import { MetaMaskInpageProvider } from "@metamask/providers";
 
+declare global {
+  interface Window{
+    ethereum?:MetaMaskInpageProvider
+  }
+}
 const OWNER_ADDRESS = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
 
 export interface IWeb3State {
   address?: string;
-  signer?: JsonRpcSigner;
-  owner?: JsonRpcSigner;
+  signer?: AddressLike;
+  owner?: AddressLike;
   provider?: BrowserProvider;
   isAuthenticated: boolean;
 }
 
 const useWeb3Provider = () => {
   const initialWeb3State = {
-    // address: null,
-    // signer: null,
-    // owner: null,
-    // provider: null,
     isAuthenticated: false,
   };
 
