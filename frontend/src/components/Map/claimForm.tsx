@@ -10,16 +10,16 @@ type ClaimFormValues = {
 type ClaimFormProps = {
   show: boolean;
   onClose: () => void;
-  onSave: (zkInput: Types.ProofInput, zkProof: Types.ProofStruct) => void;
+  onClaim: (zkInput: Types.ProofInput, zkProof: Types.ProofStruct) => void;
   countryName: string;
   loading: boolean;
 }
 
 
-const ClaimForm: React.FunctionComponent<ClaimFormProps> = ({ show, onClose, onSave, countryName, loading }) => {
+const ClaimForm: React.FunctionComponent<ClaimFormProps> = ({ show, onClose, onClaim, countryName, loading }) => {
   const [formValues, setFormValues] = useState<ClaimFormValues>({});
 
-  const handleSave = () => {
+  const handleClaim = () => {
     if (!formValues.zkInput || !formValues.zkProof) {
       // TODO: implement proper validation
       console.log("invalid form input");
@@ -29,7 +29,7 @@ const ClaimForm: React.FunctionComponent<ClaimFormProps> = ({ show, onClose, onS
     const zkInput = JSON.parse(formValues.zkInput) as Types.ProofInput;
     const proof = JSON.parse(formValues.zkProof) as Types.ProofStruct;
 
-    onSave(zkInput, proof);
+    onClaim(zkInput, proof);
   };
 
   const onValueChange = (e: any) => {
@@ -90,7 +90,7 @@ const ClaimForm: React.FunctionComponent<ClaimFormProps> = ({ show, onClose, onS
           <Button variant="secondary" onClick={onClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleSave}>
+          <Button variant="primary" onClick={handleClaim}>
             {loading
               ? <Spinner
                   as="span"

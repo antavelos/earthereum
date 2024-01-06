@@ -12,7 +12,7 @@ const formatBigNumber = (num: number): string => (new BigNumber(num)).toFormat()
 
 const CountryGeoJson: React.FunctionComponent<{ data: Feature }> = ({ data }) => {
   const [showClaimForm, setShowClaimForm] = useState(false);
-  const {claim, loading} = useClaim()
+  const {claim, loading} = useClaim();
 
   const onSaveClaimForm = (zkInput: Types.ProofInput, zkProof: Types.ProofStruct) => {
     const props: ClaimProps = {
@@ -30,7 +30,6 @@ const CountryGeoJson: React.FunctionComponent<{ data: Feature }> = ({ data }) =>
   }, [loading]);
 
   return (
-
     <>
       <GeoJSON
         key={uuid4()}
@@ -65,7 +64,7 @@ const CountryGeoJson: React.FunctionComponent<{ data: Feature }> = ({ data }) =>
       <ClaimForm
         show={showClaimForm}
         onClose={() => setShowClaimForm(false)}
-        onSave={onSaveClaimForm}
+        onClaim={onSaveClaimForm}
         countryName={data.properties!.name}
         loading={loading}
       >

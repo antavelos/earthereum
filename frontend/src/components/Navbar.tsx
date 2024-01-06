@@ -1,23 +1,24 @@
-import { MouseEventHandler } from 'react';
 import { Container, Navbar as BNavbar, Button, OverlayTrigger, Badge, Popover } from 'react-bootstrap'
+import useEarthBalance from '../hooks/useEarthBalance';
+import { IWeb3Context, useWeb3Context } from '../context/Web3Context';
+import useEarthereumBalance from '../hooks/useEarthereumBalance';
 
-type NavBarProps = {
-  title: string;
-  isAuthenticated: boolean;
-  currentAccount?: string;
-  earthBalance?: Number;
-  onClickConnect: MouseEventHandler<HTMLButtonElement>;
-  onClickDisConnect: MouseEventHandler<HTMLButtonElement>;
-}
+const Navbar: React.FunctionComponent = () => {
+  const earthBalance = useEarthBalance();
+  const earthereumBalance = useEarthereumBalance();
+  const {
+    connectWallet,
+    disconnect,
+    state: { isAuthenticated, address },
+  } = useWeb3Context() as IWeb3Context;
 
-const Navbar: React.FunctionComponent<NavBarProps> = (props: NavBarProps) => {
   return (
     <BNavbar className="bg-body-tertiary" bg="dark" data-bs-theme="dark">
       <Container>
-        <BNavbar.Brand href="#">{props.title}</BNavbar.Brand>
+        <BNavbar.Brand href="#">Earthereum</BNavbar.Brand>
         <BNavbar.Toggle />
         <BNavbar.Collapse className="justify-content-end">
-          {props.isAuthenticated
+          {isAuthenticated
             ? <>
                 <OverlayTrigger
                   trigger="click"
@@ -25,20 +26,21 @@ const Navbar: React.FunctionComponent<NavBarProps> = (props: NavBarProps) => {
                   overlay={
                     <Popover>
                       <Popover.Body>
-                        {props.currentAccount}
+                        {address}
                       </Popover.Body>
                     </Popover>
                   }
                 >
                   <BNavbar.Text>
                     Connected as:
-                    <Badge bg="secondary">{props.currentAccount!.slice(0, 8) + '...'}</Badge>
+                    <Badge bg="secondary">{address!.slice(0, 8) + '...'}</Badge>
                   </BNavbar.Text>
                 </OverlayTrigger> |
-                <BNavbar.Text>EARTH: {props.earthBalance?.toString()} </BNavbar.Text>
-                <Button size='sm' variant="primary" onClick={props.onClickDisConnect}>Disconnect</Button>
+                <BNavbar.Text>EARTH: {earthBalance?.toString()} </BNavbar.Text> |
+                <BNavbar.Text>LAND: {earthereumBalance?.toString()} </BNavbar.Text> |
+                <Button size='sm' variant="primary" onClick={disconnect}>Disconnect</Button>
               </>
-            : <Button size='sm' variant="primary" onClick={props.onClickConnect}>Connect</Button>
+            : <Button size='sm' variant="primary" onClick={connectWallet}>Connect</Button>
           }
         </BNavbar.Collapse>
       </Container>

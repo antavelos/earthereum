@@ -10,26 +10,21 @@ const useEarthBalance = () => {
     state: { isAuthenticated, address },
   } = useWeb3Context() as IWeb3Context;
 
-  useEffect(() => {
-    if (!contract) return;
-
-    const getBalance = async () => {
-      if (!isAuthenticated || !address) {
-        return;
-      }
-
-      try {
-        const balance = await contract.balanceOf(address);
-
-        setBalance(() => Number(balance));
-      } catch(err){
-        console.error(err);
-      }
+  const getBalance = () => {
+    if (!contract || !isAuthenticated || !address) {
+      return
     };
 
-    getBalance();
+    contract.balanceOf(address)
+    .then(res => {
+      setBalance(() => Number(res));
+    })
+    .catch(err => {
+      console.error(err);
+    });
+  }
 
-  }, [contract, address, isAuthenticated]);
+  useEffect(getBalance, [contract, address, isAuthenticated]);
 
   return balance;
 };
