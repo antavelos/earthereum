@@ -3,10 +3,6 @@ import { Button, Card } from 'react-bootstrap';
 import { GeoJSON, Popup } from 'react-leaflet';
 import {v4 as uuid4} from 'uuid';
 import BigNumber from "bignumber.js";
-import { useEffect, useState } from 'react';
-import ClaimForm from './claimForm';
-import { Types } from '../../types/Earthereum';
-import useClaim, { ClaimProps } from '../../hooks/useClaim';
 import { BigNumberish } from 'ethers';
 
 const formatBigNumber = (num: number): string => (new BigNumber(num)).toFormat();
@@ -17,23 +13,7 @@ type CountryProps = {
 }
 
 const CountryGeoJson: React.FunctionComponent<CountryProps> = ({ data, onClaimClick }) => {
-  const [showClaimForm, setShowClaimForm] = useState(false);
-  const {claim, loading} = useClaim();
-
-  const onSaveClaimForm = (zkInput: Types.ProofInput, zkProof: Types.ProofStruct) => {
-    const props: ClaimProps = {
-      area: data.properties!.areaInKm2,
-      zkInput,
-      zkProof,
-      uri: ""
-    }
-
-    claim(props);
-  }
-
-  useEffect(() => {
-    setShowClaimForm(loading);
-  }, [loading]);
+  const {name, areaInKm2} = data.properties!;
 
   return (
     <>
@@ -59,7 +39,7 @@ const CountryGeoJson: React.FunctionComponent<CountryProps> = ({ data, onClaimCl
               <Card.Text>
               Total area: {formatBigNumber(data.properties!.areaInKm2)} km<sup>2</sup>
               </Card.Text>
-              <Button variant="outline-success" size='sm' onClick={() => onClaimClick(data.properties!.name, data.properties!.areaInKm2)}>Claim</Button>{' '}
+              <Button variant="outline-success" size='sm' onClick={() => onClaimClick(name, areaInKm2)}>Claim</Button>{' '}
               <Button variant="outline-success" size='sm'>Sell</Button>{' '}
               <Button variant="outline-success" size='sm'>Buy</Button>
             </Card.Body>

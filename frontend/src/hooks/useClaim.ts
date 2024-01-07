@@ -13,6 +13,7 @@ export type ClaimProps = {
 
 const useClaim = () => {
   const [loading, setLoading] = useState(false);
+  const [claimed, setClaimed] = useState(false);
   const {
     state: { signer, owner }
   } = useWeb3Context() as IWeb3Context;
@@ -24,9 +25,11 @@ const useClaim = () => {
     }
 
     setLoading(true);
+    setClaimed(false);
     contract.claim(area, zkInput, zkProof, uri, signer)
     .then(() => {
       setLoading(false);
+      setClaimed(true);
     })
     .catch((err: Error) => {
       console.error(err);
@@ -34,7 +37,7 @@ const useClaim = () => {
     })
   };
 
-  return { claim, loading, };
+  return { claim, loading, claimed };
 };
 
 export default useClaim;

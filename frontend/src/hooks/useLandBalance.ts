@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import useEarthContract from "./useEarthContract";
+import useEarthereumContract from "./useEarthereumContract";
 import { IWeb3Context, useWeb3Context } from "../context/Web3Context";
 
-const useEarthBalance = () => {
-  const contract = useEarthContract();
+const useLandBalance = () => {
+  const contract = useEarthereumContract();
   const [balance, setBalance] = useState<number | undefined>();
   const {
     state: { isAuthenticated, address },
@@ -27,4 +27,4 @@ const useEarthBalance = () => {
   return {balance, getBalance};
 };
 
-export default useEarthBalance;
+export default useLandBalance;

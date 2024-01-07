@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { BigNumberish } from 'ethers';
 import useClaim, { ClaimProps } from '../../hooks/useClaim';
 import { Types } from '../../types/Earthereum';
+import { IContractContext, useContractContext } from '../../context/ContractContext';
 
 Icon.Default.mergeOptions({
     iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -20,11 +21,13 @@ Icon.Default.mergeOptions({
 const Map: React.FunctionComponent<{ countriesGeoJSON: FeatureCollection | undefined }> = ({ countriesGeoJSON }) => {
   const center: LatLngTuple = [51.505, -0.09];
   const tileLayerAttribution: string = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>';
+
   const [showClaimForm, setShowClaimForm] = useState<boolean>(false);
   const [countryName, setCountryName] = useState<string>('');
   const [area, setArea] = useState<BigNumberish>(0);
 
-  const {claim, loading} = useClaim();
+  const {claim, loading, claimed} = useClaim();
+  const {getEarthBalance, getLandBalance} = useContractContext() as IContractContext;
 
   const onSaveClaimForm = (zkInput: Types.ProofInput, zkProof: Types.ProofStruct) => {
     const props: ClaimProps = {
@@ -37,15 +40,22 @@ const Map: React.FunctionComponent<{ countriesGeoJSON: FeatureCollection | undef
     claim(props);
   }
 
-  useEffect(() => {
-    setShowClaimForm(loading);
-  }, [loading]);
-
   const onClaimClick = (name: string, area: BigNumberish) => {
     setShowClaimForm(true);
     setCountryName(name);
     setArea(area);
   }
+
+  useEffect(() => {
+    setShowClaimForm(loading);
+  }, [loading]);
+
+  useEffect(() => {
+    if (claimed) {
+      getEarthBalance();
+      getLandBalance();
+    }
+  }, [claimed, getEarthBalance, getLandBalance]);
 
   return (
     <MapContainer center={center} zoom={3}>

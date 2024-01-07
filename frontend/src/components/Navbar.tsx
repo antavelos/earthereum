@@ -1,11 +1,9 @@
 import { Container, Navbar as BNavbar, Button, OverlayTrigger, Badge, Popover } from 'react-bootstrap'
-import useEarthBalance from '../hooks/useEarthBalance';
 import { IWeb3Context, useWeb3Context } from '../context/Web3Context';
-import useEarthereumBalance from '../hooks/useEarthereumBalance';
+import { IContractContext, useContractContext } from '../context/ContractContext';
 
 const Navbar: React.FunctionComponent = () => {
-  const earthBalance = useEarthBalance();
-  const earthereumBalance = useEarthereumBalance();
+  const {state: {earthBalance, landBalance}} = useContractContext() as IContractContext;
   const {
     connectWallet,
     disconnect,
@@ -37,7 +35,7 @@ const Navbar: React.FunctionComponent = () => {
                   </BNavbar.Text>
                 </OverlayTrigger> |
                 <BNavbar.Text>EARTH: {earthBalance?.toString()} </BNavbar.Text> |
-                <BNavbar.Text>LAND: {earthereumBalance?.toString()} </BNavbar.Text> |
+                <BNavbar.Text>LAND: {landBalance?.toString()} </BNavbar.Text> |
                 <Button size='sm' variant="primary" onClick={disconnect}>Disconnect</Button>
               </>
             : <Button size='sm' variant="primary" onClick={connectWallet}>Connect</Button>
