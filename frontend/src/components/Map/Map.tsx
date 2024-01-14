@@ -1,5 +1,5 @@
 import {v4 as uuid4} from 'uuid';
-import { FeatureCollection } from 'geojson';
+import { FeatureCollection, Feature } from 'geojson';
 import { LatLngTuple, Icon } from 'leaflet';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import { FullscreenControl } from 'react-leaflet-fullscreen';
@@ -11,6 +11,7 @@ import { BigNumberish } from 'ethers';
 import useClaim, { ClaimProps } from '../../hooks/useClaim';
 import { Types } from '../../types/Earthereum';
 import { IContractContext, useContractContext } from '../../context/ContractContext';
+import * as utils from '../../utils';
 
 Icon.Default.mergeOptions({
     iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -18,21 +19,34 @@ Icon.Default.mergeOptions({
     shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
+type FeatureData = {
+  countryName: string;
+  area: BigNumberish;
+  coordinatesHash: string;
+}
+
+const makeZKInput = (coordinatesHash: string, expectedHash: string): Types.ZKInput => {
+  return [coordinatesHash, expectedHash].map(utils.splitHex).flat() as Types.ZKInput
+};
+
 const Map: React.FunctionComponent<{ countriesGeoJSON: FeatureCollection | undefined }> = ({ countriesGeoJSON }) => {
   const center: LatLngTuple = [51.505, -0.09];
   const tileLayerAttribution: string = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>';
 
   const [showClaimForm, setShowClaimForm] = useState<boolean>(false);
-  const [countryName, setCountryName] = useState<string>('');
-  const [area, setArea] = useState<BigNumberish>(0);
+  const [featureData, setFeatureData] = useState<FeatureData>({
+    countryName: "",
+    area: 0,
+    coordinatesHash: ""
+  });
 
   const {claim, loading, claimed} = useClaim();
   const {getEarthBalance, getLandBalance} = useContractContext() as IContractContext;
 
-  const onSaveClaimForm = (zkInput: Types.ProofInput, zkProof: Types.ProofStruct) => {
+  const onSaveClaimForm = (expectedHash: string, zkProof: Types.ProofStruct) => {
     const props: ClaimProps = {
-      area: area,
-      zkInput,
+      area: featureData.area,
+      zkInput: makeZKInput(featureData.coordinatesHash, expectedHash),
       zkProof,
       uri: ""
     }
@@ -40,10 +54,19 @@ const Map: React.FunctionComponent<{ countriesGeoJSON: FeatureCollection | undef
     claim(props);
   }
 
-  const onClaimClick = (name: string, area: BigNumberish) => {
+  const onClaimClick = (feature: Feature) => {
+    if (!feature) {
+      return;
+    }
+
     setShowClaimForm(true);
-    setCountryName(name);
-    setArea(area);
+
+    setFeatureData({
+      ...featureData,
+      countryName: feature.properties?.name,
+      area: feature.properties?.areaInKm2,
+      coordinatesHash: utils.hashCoordinates(feature)
+    })
   }
 
   useEffect(() => {
@@ -83,7 +106,7 @@ const Map: React.FunctionComponent<{ countriesGeoJSON: FeatureCollection | undef
         show={showClaimForm}
         onClose={() => setShowClaimForm(false)}
         onClaim={onSaveClaimForm}
-        countryName={countryName}
+        countryName={featureData.countryName}
         loading={loading}
       >
       </ClaimForm>

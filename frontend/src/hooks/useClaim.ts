@@ -6,7 +6,7 @@ import { Types } from "../types/Earthereum";
 
 export type ClaimProps = {
   area: BigNumberish;
-  zkInput: Types.ProofInput;
+  zkInput: Types.ZKInput;
   zkProof: Types.ProofStruct;
   uri: string;
 };

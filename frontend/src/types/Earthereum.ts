@@ -59,7 +59,7 @@ export declare namespace Types {
     c: Pairing.G1PointStructOutput;
   };
 
-  export type ProofInput = [BigNumberish, BigNumberish, BigNumberish, BigNumberish];
+  export type ZKInput = [BigNumberish, BigNumberish, BigNumberish, BigNumberish];
 }
 
 export interface EarthereumInterface extends Interface {
@@ -124,7 +124,7 @@ export interface EarthereumInterface extends Interface {
     functionFragment: "claim",
     values: [
       BigNumberish,
-      Types.ProofInput,
+      Types.ZKInput,
       Types.ProofStruct,
       string,
       AddressLike
@@ -471,7 +471,7 @@ export interface Earthereum extends BaseContract {
   claim: TypedContractMethod<
     [
       areaInKm2: BigNumberish,
-      zkInput: Types.ProofInput,
+      zkInput: Types.ZKInput,
       zkProof: Types.ProofStruct,
       uri: string,
       claimer: AddressLike

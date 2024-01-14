@@ -3,14 +3,14 @@ import { useState } from "react";
 import { Types } from "../../types/Earthereum";
 
 type ClaimFormValues = {
-  zkInput?: string;
+  hash?: string;
   zkProof?: string;
 };
 
 type ClaimFormProps = {
   show: boolean;
   onClose: () => void;
-  onClaim: (zkInput: Types.ProofInput, zkProof: Types.ProofStruct) => void;
+  onClaim: (hash: string, zkProof: Types.ProofStruct) => void;
   countryName: string;
   loading: boolean;
 }
@@ -20,17 +20,23 @@ const ClaimForm: React.FunctionComponent<ClaimFormProps> = ({ show, onClose, onC
   const [formValues, setFormValues] = useState<ClaimFormValues>({});
 
   const handleClaim = () => {
-    if (!formValues.zkInput || !formValues.zkProof) {
+    if (!formValues.hash || !formValues.zkProof) {
       // TODO: implement proper validation
       console.log("invalid form input");
       return;
     }
 
-    const zkInput = JSON.parse(formValues.zkInput) as Types.ProofInput;
     const proof = JSON.parse(formValues.zkProof) as Types.ProofStruct;
 
-    onClaim(zkInput, proof);
+    onClaim(formValues.hash, proof);
   };
+
+  const updateFormValuesFromEvent = (e: any) => {
+    setFormValues({
+      ...formValues,
+      [e.target.name]: e.target.value
+    });
+  }
 
   const onValueChange = (e: any) => {
     let prettyValue;
@@ -41,10 +47,8 @@ const ClaimForm: React.FunctionComponent<ClaimFormProps> = ({ show, onClose, onC
       console.log(e);
     }
     e.target.value = prettyValue || e.target.value;
-    setFormValues({
-      ...formValues,
-      [e.target.name]: e.target.value
-    });
+
+    updateFormValuesFromEvent(e);
   };
 
   return (
@@ -58,18 +62,9 @@ const ClaimForm: React.FunctionComponent<ClaimFormProps> = ({ show, onClose, onC
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group
-              className="mb-3"
-              controlId="claimForm.zkInput"
-              >
-              <Form.Label>ZK Input</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={6}
-                size="sm"
-                name="zkInput"
-                onChange={onValueChange}
-                />
+            <Form.Group className="mb-3" controlId="claimForm.hash">
+              <Form.Label>Hash</Form.Label>
+              <Form.Control type="text" name="hash" onChange={updateFormValuesFromEvent}/>
             </Form.Group>
             <Form.Group
               className="mb-3"

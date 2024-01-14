@@ -3,18 +3,15 @@ import { Button, Card } from 'react-bootstrap';
 import { GeoJSON, Popup } from 'react-leaflet';
 import {v4 as uuid4} from 'uuid';
 import BigNumber from "bignumber.js";
-import { BigNumberish } from 'ethers';
 
 const formatBigNumber = (num: number): string => (new BigNumber(num)).toFormat();
 
 type CountryProps = {
   data: Feature;
-  onClaimClick: (name: string, area: BigNumberish) => void;
+  onClaimClick: (feature: Feature) => void;
 }
 
 const CountryGeoJson: React.FunctionComponent<CountryProps> = ({ data, onClaimClick }) => {
-  const {name, areaInKm2} = data.properties!;
-
   return (
     <>
       <GeoJSON
@@ -39,7 +36,7 @@ const CountryGeoJson: React.FunctionComponent<CountryProps> = ({ data, onClaimCl
               <Card.Text>
               Total area: {formatBigNumber(data.properties!.areaInKm2)} km<sup>2</sup>
               </Card.Text>
-              <Button variant="outline-success" size='sm' onClick={() => onClaimClick(name, areaInKm2)}>Claim</Button>{' '}
+              <Button variant="outline-success" size='sm' onClick={() => onClaimClick(data)}>Claim</Button>{' '}
               <Button variant="outline-success" size='sm'>Sell</Button>{' '}
               <Button variant="outline-success" size='sm'>Buy</Button>
             </Card.Body>
